@@ -1,0 +1,423 @@
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<title>Gol de Vestuario — Design System</title>
+<style>
+  :root {
+    --color-bg: #0A0A0A;
+    --color-surface: #141414;
+    --color-surface-alt: #1A1A1A;
+    --color-border: #2A2A2A;
+    --color-border-strong: #3A3A3A;
+    --color-primary: #0A0A0A;
+    --color-on-primary: #F2EFE6;
+    --color-accent: #C9A227;
+    --color-accent-light: #E0B84B;
+    --color-on-accent: #1A1A1A;
+    --color-text-primary: #F2EFE6;
+    --color-text-secondary: #C8C8C8;
+    --color-text-muted: #8A8A8A;
+    --color-success: #3FA34D;
+    --color-warning: #E0B84B;
+    --color-error: #C0392B;
+    --color-info: #6FA8C9;
+
+    --type-display-family: 'Anton', sans-serif;
+    --type-display-size: 44px;
+    --type-display-weight: 400;
+    --type-display-lh: 1.1;
+    --type-display-ls: 0.5px;
+
+    --type-h1-family: 'Anton', sans-serif;
+    --type-h1-size: 32px;
+    --type-h1-lh: 1.15;
+    --type-h1-ls: 0.5px;
+
+    --type-h2-family: 'Anton', sans-serif;
+    --type-h2-size: 24px;
+    --type-h2-lh: 1.2;
+    --type-h2-ls: 0.3px;
+
+    --type-stat-family: 'Bebas Neue', cursive;
+    --type-stat-size: 22px;
+    --type-stat-lh: 1.2;
+    --type-stat-ls: 1px;
+
+    --type-eyebrow-family: 'Oswald', sans-serif;
+    --type-eyebrow-size: 13px;
+    --type-eyebrow-weight: 500;
+    --type-eyebrow-lh: 1.4;
+    --type-eyebrow-ls: 3px;
+
+    --type-body-family: 'Oswald', sans-serif;
+    --type-body-size: 15px;
+    --type-body-weight: 400;
+    --type-body-lh: 1.6;
+
+    --type-body-small-size: 13px;
+    --type-body-small-lh: 1.5;
+
+    --type-caption-size: 12px;
+    --type-caption-lh: 1.4;
+
+    --type-nav-size: 13px;
+    --type-nav-ls: 0.3px;
+
+    --type-button-size: 14px;
+    --type-button-weight: 500;
+    --type-button-ls: 0.3px;
+
+    --rounded-none: 0px;
+    --rounded-sm: 4px;
+    --rounded-md: 6px;
+    --rounded-lg: 12px;
+    --rounded-full: 999px;
+
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-14: 56px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+    font-family: var(--type-body-family);
+    margin: 0;
+    padding: 0 0 80px;
+  }
+
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 24px; }
+
+  header.page-header {
+    padding: var(--space-14) 24px var(--space-8);
+    border-bottom: 1px solid var(--color-border);
+    text-align: center;
+  }
+  header.page-header h1 {
+    font-family: var(--type-display-family);
+    font-size: var(--type-display-size);
+    font-weight: var(--type-display-weight);
+    line-height: var(--type-display-lh);
+    letter-spacing: var(--type-display-ls);
+    text-transform: uppercase;
+    margin: 0 0 8px;
+    color: var(--color-text-primary);
+  }
+  header.page-header h1 span { color: var(--color-accent); }
+  header.page-header p.desc {
+    color: var(--color-text-secondary);
+    font-size: var(--type-body-size);
+    max-width: 520px;
+    margin: 0 auto 8px;
+  }
+  header.page-header p.note {
+    color: var(--color-text-muted);
+    font-size: var(--type-caption-size);
+    margin: 0;
+  }
+
+  section.dsec { padding: var(--space-14) 0; border-bottom: 1px solid var(--color-border); }
+  section.dsec:last-of-type { border-bottom: none; }
+  section.dsec h2 {
+    font-family: var(--type-h2-family);
+    font-size: var(--type-h2-size);
+    letter-spacing: var(--type-h2-ls);
+    text-transform: uppercase;
+    color: var(--color-text-primary);
+    margin: 0 0 24px;
+  }
+
+  /* Colors */
+  .swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px,1fr)); gap: var(--space-4); }
+  .swatch { border: 1px solid var(--color-border); border-radius: var(--rounded-md); overflow: hidden; }
+  .swatch-color { height: 72px; display: flex; align-items: flex-end; padding: var(--space-2); font-size: var(--type-caption-size); }
+  .swatch-meta { padding: var(--space-3); background: var(--color-surface); }
+  .swatch-meta .name { font-size: var(--type-body-small-size); color: var(--color-text-primary); margin: 0 0 2px; }
+  .swatch-meta .hex { font-size: var(--type-caption-size); color: var(--color-text-muted); margin: 0; font-family: monospace; }
+  .group-label { font-family: var(--type-eyebrow-family); font-size: var(--type-eyebrow-size); font-weight: var(--type-eyebrow-weight); letter-spacing: var(--type-eyebrow-ls); text-transform: uppercase; color: var(--color-accent); margin: var(--space-8) 0 var(--space-3); }
+  .group-label:first-child { margin-top: 0; }
+
+  /* Typography */
+  .type-row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-6); padding: var(--space-4) 0; border-bottom: 1px solid var(--color-border); }
+  .type-row:last-child { border-bottom: none; }
+  .type-specimen { flex: 1; text-transform: none; color: var(--color-text-primary); }
+  .type-info { flex-shrink: 0; text-align: right; color: var(--color-text-muted); font-size: var(--type-caption-size); font-family: monospace; }
+  .type-info .tname { color: var(--color-accent-light); font-family: var(--type-body-family); font-size: var(--type-body-small-size); display: block; margin-bottom: 4px; }
+
+  /* Spacing */
+  .space-row { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-2) 0; }
+  .space-bar { background: var(--color-accent); height: 16px; }
+  .space-label { font-size: var(--type-body-small-size); color: var(--color-text-secondary); font-family: monospace; width: 120px; }
+
+  /* Radius */
+  .radius-grid { display: flex; gap: var(--space-6); flex-wrap: wrap; }
+  .radius-item { text-align: center; }
+  .radius-box { width: 88px; height: 88px; background: var(--color-surface); border: 1px solid var(--color-border-strong); margin-bottom: var(--space-2); }
+  .radius-item .label { font-size: var(--type-caption-size); color: var(--color-text-muted); font-family: monospace; }
+
+  /* Elevation */
+  .elev-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: var(--space-6); }
+  .elev-card { padding: var(--space-6); border-radius: var(--rounded-lg); }
+  .elev-card.flat { background: var(--color-bg); border: 1px solid var(--color-border); }
+  .elev-card.surface { background: var(--color-surface); border: 1px solid var(--color-border); }
+  .elev-card.contrast { background: var(--color-surface-alt); border: 1px solid var(--color-border-strong); }
+  .elev-card h3 { font-family: var(--type-body-family); font-size: var(--type-body-small-size); color: var(--color-text-primary); margin: 0 0 4px; }
+  .elev-card p { font-size: var(--type-caption-size); color: var(--color-text-muted); margin: 0; }
+
+  /* Components */
+  .comp-block { margin-bottom: var(--space-10); }
+  .comp-label { font-size: var(--type-caption-size); color: var(--color-text-muted); font-family: monospace; margin-bottom: var(--space-2); }
+  .comp-row { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
+
+  .btn { font-family: var(--type-body-family); font-size: var(--type-button-size); font-weight: var(--type-button-weight); letter-spacing: var(--type-button-ls); border-radius: var(--rounded-md); padding: 12px 28px; cursor: pointer; border: none; }
+  .btn-primary { background: var(--color-accent); color: var(--color-on-accent); }
+  .btn-primary-hover { background: var(--color-accent-light); color: var(--color-on-accent); }
+  .btn-secondary { background: transparent; color: var(--color-text-primary); border: 1px solid var(--color-text-secondary); }
+  .btn-secondary-hover { background: var(--color-surface-alt); color: var(--color-text-primary); border: 1px solid var(--color-text-secondary); }
+  .btn-disabled { background: var(--color-surface-alt); color: var(--color-text-muted); border: none; cursor: not-allowed; }
+
+  .demo-navbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border: 1px solid var(--color-border); border-radius: var(--rounded-lg); background: var(--color-bg); }
+  .demo-navbar .brand { font-family: var(--type-h2-family); font-size: 18px; color: var(--color-text-primary); letter-spacing: 0.5px; text-transform: uppercase; }
+  .demo-navbar .brand span { color: var(--color-accent); }
+  .demo-navbar .links { display: flex; gap: 20px; font-family: var(--type-body-family); font-size: var(--type-nav-size); color: var(--color-text-secondary); }
+
+  .demo-hero { text-align: center; padding: var(--space-14) 24px; border: 1px solid var(--color-border); border-radius: var(--rounded-lg); }
+  .demo-hero .eyebrow { font-family: var(--type-eyebrow-family); font-size: var(--type-eyebrow-size); font-weight: var(--type-eyebrow-weight); letter-spacing: var(--type-eyebrow-ls); color: var(--color-accent); text-transform: uppercase; margin: 0 0 12px; }
+  .demo-hero h3 { font-family: var(--type-display-family); font-size: var(--type-display-size); color: var(--color-text-primary); margin: 0; line-height: var(--type-display-lh); letter-spacing: var(--type-display-ls); text-transform: uppercase; }
+  .demo-hero h3 span { color: var(--color-accent); }
+  .demo-hero p { font-family: var(--type-body-family); font-size: var(--type-body-size); color: var(--color-text-secondary); max-width: 420px; margin: 20px auto 28px; }
+
+  .demo-stats { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); border: 1px solid var(--color-border); border-radius: var(--rounded-lg); overflow: hidden; }
+  .demo-stats > div { padding: 24px; text-align: center; border-right: 1px solid var(--color-border); }
+  .demo-stats > div:last-child { border-right: none; }
+  .demo-stats p.stat { font-family: var(--type-stat-family); font-size: var(--type-stat-size); color: var(--color-accent-light); margin: 0 0 4px; letter-spacing: var(--type-stat-ls); }
+  .demo-stats p.sub { font-family: var(--type-body-family); font-size: var(--type-caption-size); color: var(--color-text-secondary); margin: 0; }
+
+  .demo-card { background: var(--color-surface); border-radius: var(--rounded-lg); padding: 24px; max-width: 280px; }
+  .demo-card h4 { font-family: var(--type-body-family); font-weight: 700; font-size: var(--type-body-size); color: var(--color-text-primary); margin: 0 0 8px; }
+  .demo-card p { font-size: var(--type-body-small-size); color: var(--color-text-secondary); margin: 0; }
+
+  .demo-badge { display: inline-block; border: 1px solid var(--color-accent); color: var(--color-accent); font-size: var(--type-caption-size); border-radius: var(--rounded-full); padding: 4px 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .demo-input { background: var(--color-surface-alt); color: var(--color-text-primary); border: 1px solid var(--color-border-strong); border-radius: var(--rounded-md); padding: 10px 14px; font-family: var(--type-body-family); font-size: var(--type-body-small-size); width: 220px; }
+  .demo-input::placeholder { color: var(--color-text-muted); }
+
+  /* Do/Dont */
+  .dodont { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); }
+  .dodont ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+  .dodont li { font-size: var(--type-body-small-size); color: var(--color-text-secondary); padding-left: 28px; position: relative; }
+  .dodont h3 { font-family: var(--type-eyebrow-family); font-size: var(--type-eyebrow-size); letter-spacing: 1px; text-transform: uppercase; margin: 0 0 var(--space-4); }
+  .dodont .do h3 { color: var(--color-success); }
+  .dodont .dont h3 { color: var(--color-error); }
+  .dodont .do li:before { content: "✓"; position: absolute; left: 0; color: var(--color-success); }
+  .dodont .dont li:before { content: "✗"; position: absolute; left: 0; color: var(--color-error); }
+  @media (max-width: 640px) { .dodont { grid-template-columns: 1fr; } }
+</style>
+
+<header class="page-header">
+  <h1>GOL <span>DE VESTUARIO</span></h1>
+  <p class="desc">Dark, gold-accented design system for an Argentine football-culture apparel brand built around the locker room as sacred ground.</p>
+  <p class="note">Human-readable mirror of docs/design.md — the source of truth for a coding agent.</p>
+</header>
+
+<div class="wrap">
+
+  <section class="dsec">
+    <h2>Colors</h2>
+
+    <div class="group-label">Surfaces & Text</div>
+    <div class="swatch-grid">
+      <div class="swatch"><div class="swatch-color" style="background:var(--color-bg); color:var(--color-text-primary);"></div><div class="swatch-meta"><p class="name">bg</p><p class="hex">#0A0A0A</p></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:var(--color-surface); color:var(--color-text-primary);"></div><div class="swatch-meta"><p class="name">surface</p><p class="hex">#141414</p></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:var(--color-surface-alt); color:var(--color-text-primary);"></div><div class="swatch-meta"><p class="name">surface-alt</p><p class="hex">#1A1A1A</p></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:var(--color-border); color:var(--color-text-secondary);"></div><div class="swatch-meta"><p class="name">border</p><p class="hex">#2A2A2A</p></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:var(--color-border-strong); color:var(--color-text-secondary);"></div><div class="swatch-meta"><p class="name">border-strong</p><p class="hex">#3A3A3A</p></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:var(--color-bg); color:var(--color-text-primary); font-family: var(--type-body-family);">Aa on bg</div><div class="swatch-meta"><p class="name">text-primary</p><p class="hex">#F2EFE6</p></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:var(--color-bg); color:var(--color-text-secondary); font-family: var(--type-body-family);">Aa on bg</div><div class="swatch-meta"><p class="name">text-secondary</p><p class="hex">#C8C8C8</p></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:var(--color-bg); color:var(--color-text-muted); font-family: var(--type-body-family);">Aa on bg</div><div class="swatch-meta"><p class="name">text-muted</p><p class="hex">#8A8A8A</p></div></div>
+    </div>
+
+    <div class="group-label">Brand Accent</div>
+    <div class="swatch-grid">
+      <div class="swatch"><div class="swatch-color" style="background:var(--color-accent); color:var(--color-on-accent); font-family: var(--type-body-family);">Aa</div><div class="swatch-meta"><p class="name">accent</p><p class="hex">#C9A227</p></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:var(--color-accent-light); color:var(--color-on-accent); font-family: var(--type-body-family);">Aa</div><div class="swatch-meta"><p class="name">accent-light</p><p class="hex">#E0B84B</p></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:var(--color-on-accent); color:var(--color-accent); font-family: var(--type-body-family);">Aa</div><div class="swatch-meta"><p class="name">on-accent</p><p class="hex">#1A1A1A</p></div></div>
+    </div>
+
+    <div class="group-label">Semantic</div>
+    <div class="swatch-grid">
+      <div class="swatch"><div class="swatch-color" style="background:var(--color-success); color:#0A0A0A; font-family: var(--type-body-family);">Aa</div><div class="swatch-meta"><p class="name">success</p><p class="hex">#3FA34D</p></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:var(--color-warning); color:#1A1A1A; font-family: var(--type-body-family);">Aa</div><div class="swatch-meta"><p class="name">warning</p><p class="hex">#E0B84B</p></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:var(--color-error); color:#F2EFE6; font-family: var(--type-body-family);">Aa</div><div class="swatch-meta"><p class="name">error</p><p class="hex">#C0392B</p></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:var(--color-info); color:#0A0A0A; font-family: var(--type-body-family);">Aa</div><div class="swatch-meta"><p class="name">info</p><p class="hex">#6FA8C9</p></div></div>
+    </div>
+  </section>
+
+  <section class="dsec">
+    <h2>Typography</h2>
+    <div class="type-row">
+      <div class="type-specimen" style="font-family:var(--type-display-family); font-size:var(--type-display-size); line-height:var(--type-display-lh); letter-spacing:var(--type-display-ls); text-transform:uppercase;">Gol de Vestuario</div>
+      <div class="type-info"><span class="tname">display</span>Anton / 44px / 400 / 1.1</div>
+    </div>
+    <div class="type-row">
+      <div class="type-specimen" style="font-family:var(--type-h1-family); font-size:var(--type-h1-size); line-height:var(--type-h1-lh); letter-spacing:var(--type-h1-ls); text-transform:uppercase;">Nuestra Colección</div>
+      <div class="type-info"><span class="tname">h1</span>Anton / 32px / 400 / 1.15</div>
+    </div>
+    <div class="type-row">
+      <div class="type-specimen" style="font-family:var(--type-h2-family); font-size:var(--type-h2-size); line-height:var(--type-h2-lh); letter-spacing:var(--type-h2-ls); text-transform:uppercase;">Comunidad</div>
+      <div class="type-info"><span class="tname">h2</span>Anton / 24px / 400 / 1.2</div>
+    </div>
+    <div class="type-row">
+      <div class="type-specimen" style="font-family:var(--type-stat-family); font-size:var(--type-stat-size); line-height:var(--type-stat-lh); letter-spacing:var(--type-stat-ls); text-transform:uppercase; color:var(--color-accent-light);">Calidad</div>
+      <div class="type-info"><span class="tname">stat-label</span>Bebas Neue / 22px / 400 / 1.2</div>
+    </div>
+    <div class="type-row">
+      <div class="type-specimen" style="font-family:var(--type-eyebrow-family); font-size:var(--type-eyebrow-size); font-weight:var(--type-eyebrow-weight); line-height:var(--type-eyebrow-lh); letter-spacing:var(--type-eyebrow-ls); text-transform:uppercase; color:var(--color-accent);">Pasión por el fútbol</div>
+      <div class="type-info"><span class="tname">eyebrow</span>Oswald 500 / 13px / ls 3px</div>
+    </div>
+    <div class="type-row">
+      <div class="type-specimen" style="font-family:var(--type-body-family); font-size:var(--type-body-size); font-weight:var(--type-body-weight); line-height:var(--type-body-lh); color:var(--color-text-secondary);">Indumentaria y contenido para quienes viven el fútbol desde adentro.</div>
+      <div class="type-info"><span class="tname">body</span>Oswald / 15px / 400 / 1.6</div>
+    </div>
+    <div class="type-row">
+      <div class="type-specimen" style="font-family:var(--type-body-family); font-size:var(--type-body-small-size); line-height:var(--type-body-small-lh); color:var(--color-text-secondary);">Envíos a todo el país.</div>
+      <div class="type-info"><span class="tname">body-small</span>Oswald / 13px / 1.5</div>
+    </div>
+    <div class="type-row">
+      <div class="type-specimen" style="font-family:var(--type-body-family); font-size:var(--type-caption-size); line-height:var(--type-caption-lh); color:var(--color-text-muted);">Materiales premium</div>
+      <div class="type-info"><span class="tname">caption</span>Oswald / 12px / 1.4</div>
+    </div>
+    <div class="type-row">
+      <div class="type-specimen" style="font-family:var(--type-body-family); font-size:var(--type-nav-size); letter-spacing:var(--type-nav-ls); color:var(--color-text-secondary);">Inicio · Productos · Comunidad · Contacto</div>
+      <div class="type-info"><span class="tname">nav</span>Oswald / 13px</div>
+    </div>
+    <div class="type-row">
+      <div class="type-specimen" style="font-family:var(--type-body-family); font-size:var(--type-button-size); font-weight:var(--type-button-weight); letter-spacing:var(--type-button-ls); color:var(--color-text-primary);">VER PRODUCTOS</div>
+      <div class="type-info"><span class="tname">button</span>Oswald 500 / 14px</div>
+    </div>
+  </section>
+
+  <section class="dsec">
+    <h2>Spacing</h2>
+    <div class="space-row"><div class="space-label">1 · 4px</div><div class="space-bar" style="width:4px;"></div></div>
+    <div class="space-row"><div class="space-label">2 · 8px</div><div class="space-bar" style="width:8px;"></div></div>
+    <div class="space-row"><div class="space-label">3 · 12px</div><div class="space-bar" style="width:12px;"></div></div>
+    <div class="space-row"><div class="space-label">4 · 16px</div><div class="space-bar" style="width:16px;"></div></div>
+    <div class="space-row"><div class="space-label">5 · 20px</div><div class="space-bar" style="width:20px;"></div></div>
+    <div class="space-row"><div class="space-label">6 · 24px</div><div class="space-bar" style="width:24px;"></div></div>
+    <div class="space-row"><div class="space-label">8 · 32px</div><div class="space-bar" style="width:32px;"></div></div>
+    <div class="space-row"><div class="space-label">10 · 40px</div><div class="space-bar" style="width:40px;"></div></div>
+    <div class="space-row"><div class="space-label">14 · 56px</div><div class="space-bar" style="width:56px;"></div></div>
+  </section>
+
+  <section class="dsec">
+    <h2>Radius</h2>
+    <div class="radius-grid">
+      <div class="radius-item"><div class="radius-box" style="border-radius:var(--rounded-none);"></div><div class="label">none · 0px</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:var(--rounded-sm);"></div><div class="label">sm · 4px</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:var(--rounded-md);"></div><div class="label">md · 6px</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:var(--rounded-lg);"></div><div class="label">lg · 12px</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:var(--rounded-full);"></div><div class="label">full · 999px</div></div>
+    </div>
+  </section>
+
+  <section class="dsec">
+    <h2>Elevation & Depth</h2>
+    <div class="elev-grid">
+      <div class="elev-card flat"><h3>Flat / on bg</h3><p>No shadow. bg + hairline border only — nav, hero, stat row.</p></div>
+      <div class="elev-card surface"><h3>Surface step</h3><p>surface + border — cards, panels that need light separation.</p></div>
+      <div class="elev-card contrast"><h3>Contrast step</h3><p>surface-alt + border-strong — inputs, hovered secondary buttons.</p></div>
+    </div>
+  </section>
+
+  <section class="dsec">
+    <h2>Components</h2>
+
+    <div class="comp-block">
+      <div class="comp-label">navbar</div>
+      <div class="demo-navbar">
+        <div class="brand">GOL <span>DE VESTUARIO</span></div>
+        <div class="links"><span>Inicio</span><span>Productos</span><span>Comunidad</span><span>Contacto</span></div>
+      </div>
+    </div>
+
+    <div class="comp-block">
+      <div class="comp-label">button-primary / button-primary-hover / button-secondary / button-secondary-hover / button-disabled</div>
+      <div class="comp-row">
+        <button class="btn btn-primary">Ver productos</button>
+        <button class="btn btn-primary-hover">Ver productos (hover)</button>
+        <button class="btn btn-secondary">Conocer más</button>
+        <button class="btn btn-secondary-hover">Conocer más (hover)</button>
+        <button class="btn btn-disabled" disabled>No disponible</button>
+      </div>
+    </div>
+
+    <div class="comp-block">
+      <div class="comp-label">hero</div>
+      <div class="demo-hero">
+        <p class="eyebrow">Pasión por el fútbol</p>
+        <h3>EL VESTUARIO<br><span>DONDE NACE EL GOL</span></h3>
+        <p>Indumentaria y contenido para quienes viven el fútbol desde adentro.</p>
+        <div class="comp-row" style="justify-content:center;">
+          <button class="btn btn-primary">Ver productos</button>
+          <button class="btn btn-secondary">Conocer más</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-block">
+      <div class="comp-label">stat-card (3-up row)</div>
+      <div class="demo-stats">
+        <div><p class="stat">Calidad</p><p class="sub">Materiales premium</p></div>
+        <div><p class="stat">Comunidad</p><p class="sub">Hecho por hinchas</p></div>
+        <div><p class="stat">Estilo</p><p class="sub">Diseño de vestuario</p></div>
+      </div>
+    </div>
+
+    <div class="comp-block">
+      <div class="comp-label">card / badge / input</div>
+      <div class="comp-row">
+        <div class="demo-card">
+          <h4>Camiseta Vestuario</h4>
+          <p>Edición limitada, algodón peinado 220g.</p>
+        </div>
+        <span class="demo-badge">Nuevo</span>
+        <input class="demo-input" placeholder="tu@email.com">
+      </div>
+    </div>
+  </section>
+
+  <section class="dsec">
+    <h2>Do's and Don'ts</h2>
+    <div class="dodont">
+      <div class="do">
+        <h3>Do</h3>
+        <ul>
+          <li>Reserve gold (accent / accent-light) for one primary action or highlight per view.</li>
+          <li>Set all Anton and Bebas Neue text in uppercase.</li>
+          <li>Use hairline border tokens, not shadows, for separation.</li>
+          <li>Keep button/input radii in the sm–md range; lg is for containers only.</li>
+          <li>Pair gold buttons with on-accent (near-black) text.</li>
+        </ul>
+      </div>
+      <div class="dont">
+        <h3>Don't</h3>
+        <ul>
+          <li>Don't introduce a second brand color.</li>
+          <li>Don't add drop shadows or glassmorphism.</li>
+          <li>Don't set body or nav copy in Anton or Bebas Neue.</li>
+          <li>Don't use radii above 12px anywhere.</li>
+          <li>Don't let secondary buttons use the gold accent.</li>
+          <li>Don't lighten bg into mid-gray "dark mode" gray.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</div>

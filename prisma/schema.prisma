@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Talles e imágenes se guardan como JSON (arrays chicos, sin necesidad de
+// tablas relacionadas) para mantener la forma 1:1 con el tipo Producto del
+// front (src/types/index.ts).
+model Producto {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  nombre      String
+  club        String?
+  temporada   String?
+  // "en-stock" | "por-encargue" (RN-03)
+  tipo        String
+  // "fan" | "player" | "retro" (RN-06)
+  categoria   String
+  // Solo presente cuando tipo = "en-stock" (RN-04/RN-05)
+  precio      Int?
+  // TalleDisponibilidad[] serializado: [{ "talle": "M", "disponible": true }, ...]
+  talles      String
+  // string[] serializado con las rutas de imagen
+  imagenes    String
+  descripcion String?
+  destacado   Boolean  @default(false)
+  orden       Int      @default(0)
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// El slug (ej. "fan", "shorts-fan") es lo que Producto.categoria guarda —
+// igual que Producto.slug, id es un cuid interno para reordenar/editar/
+// borrar desde el admin y slug es el identificador público/legible.
+model Categoria {
+  id         String   @id @default(cuid())
+  slug       String   @unique
+  nombre     String
+  guiaTalles String
+  cuidados   String
+  // Talle[] serializado: ["M","L","XL",...]
+  talles     String
+  orden      Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
