@@ -2,8 +2,49 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { guardarProducto, subirImagen } from "@/app/admin/(protected)/productos/actions";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import { SortableContext, rectSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import {
+  guardarProducto,
+  agregarImagenProductoAction,
+  quitarImagenProductoAction,
+  reordenarImagenesProductoAction,
+} from "@/app/admin/(protected)/productos/actions";
+import { subirImagenDirecto } from "@/lib/cloudinary-client";
 import type { Categoria, CategoriaId, TalleDisponibilidad, TipoProducto } from "@/types";
+
+function SortableThumb({ img, onQuitar }: { img: string; onQuitar: (img: string) => void }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: img });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }}
+      className="relative h-20 w-20 touch-none overflow-hidden rounded-md bg-surface"
+      {...attributes}
+      {...listeners}
+    >
+      <Image src={img} alt="" fill sizes="80px" className="object-contain p-1" />
+      <button
+        type="button"
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={() => onQuitar(img)}
+        aria-label="Quitar imagen"
+        className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center bg-error text-fg text-xs"
+      >
+        ✕
+      </button>
+    </div>
+  );
+}
 
 export interface ProductoFormValues {
   id?: string;
@@ -35,22 +76,61 @@ export function ProductoForm({ valores, categorias }: { valores?: ProductoFormVa
 
   const disponiblesPorTalle = new Map(valores?.talles.map((t) => [t.talle, t.disponible]));
   const categoriaActual = categorias.find((c) => c.id === categoria);
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
-  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // Con producto ya creado (valores?.id), cada foto se persiste apenas se
+  // sube — no espera al submit del form. Si dos dispositivos tienen el
+  // mismo producto abierto, ninguno pisa lo que subió el otro (ver
+  // agregarImagenProducto/quitarImagenProducto, que leen y modifican la
+  // base en el momento en vez de confiar en lo que este navegador tenía
+  // en memoria). Las subidas se hacen una por una (no en paralelo) por la
+  // misma razón: si dos "agregar" del mismo dispositivo pisaran la base al
+  // mismo tiempo, una podría perder la foto que agregó la otra.
+  async function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
     setSubiendo(true);
     setErrorSubida(null);
-    const fd = new FormData();
-    fd.set("file", file);
-    const res = await subirImagen(fd);
-    setSubiendo(false);
     e.target.value = "";
-    if (res.error) {
-      setErrorSubida(res.error);
-      return;
+
+    for (const file of files) {
+      const res = await subirImagenDirecto(file, "gdv_admin_unsigned");
+      if (res.error) {
+        setErrorSubida(res.error);
+        continue;
+      }
+      if (res.path) {
+        if (valores?.id) {
+          const actuales = await agregarImagenProductoAction(valores.id, res.path);
+          setImagenes(actuales);
+        } else {
+          setImagenes((prev) => [...prev, res.path!]);
+        }
+      }
     }
-    if (res.path) setImagenes((prev) => [...prev, res.path!]);
+
+    setSubiendo(false);
+  }
+
+  async function handleQuitarImagen(img: string) {
+    if (valores?.id) {
+      const actuales = await quitarImagenProductoAction(valores.id, img);
+      setImagenes(actuales);
+    } else {
+      setImagenes((prev) => prev.filter((i) => i !== img));
+    }
+  }
+
+  async function handleDragEndImagenes(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = imagenes.indexOf(String(active.id));
+    const newIndex = imagenes.indexOf(String(over.id));
+    const reordenadas = arrayMove(imagenes, oldIndex, newIndex);
+    setImagenes(reordenadas);
+    if (valores?.id) {
+      await reordenarImagenesProductoAction(valores.id, reordenadas);
+    }
   }
 
   return (
@@ -184,22 +264,31 @@ export function ProductoForm({ valores, categorias }: { valores?: ProductoFormVa
 
       <section>
         <p className={labelClass}>Imágenes</p>
+        {imagenes.length > 1 ? (
+          <p className="text-caption mt-1 text-fg-muted">Arrastrá las fotos para cambiar el orden en que se muestran.</p>
+        ) : null}
         <div className="mt-2 flex flex-wrap gap-3">
-          {imagenes.map((img) => (
-            <div key={img} className="relative h-20 w-20 overflow-hidden rounded-md bg-surface">
-              <Image src={img} alt="" fill sizes="80px" className="object-contain p-1" />
-              <button
-                type="button"
-                onClick={() => setImagenes((prev) => prev.filter((i) => i !== img))}
-                aria-label="Quitar imagen"
-                className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center bg-error text-fg text-xs"
-              >
-                ✕
-              </button>
-            </div>
-          ))}
+          <DndContext
+            id="producto-imagenes-dnd"
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEndImagenes}
+          >
+            <SortableContext items={imagenes} strategy={rectSortingStrategy}>
+              {imagenes.map((img) => (
+                <SortableThumb key={img} img={img} onQuitar={handleQuitarImagen} />
+              ))}
+            </SortableContext>
+          </DndContext>
         </div>
-        <input type="file" accept="image/*" onChange={handleFile} disabled={subiendo} className="text-body-small mt-3 text-fg-secondary" />
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={handleFiles}
+          disabled={subiendo}
+          className="text-body-small mt-3 text-fg-secondary"
+        />
         {subiendo ? <p className="text-caption mt-1 text-fg-muted">Subiendo...</p> : null}
         {errorSubida ? <p className="text-caption mt-1 text-error">{errorSubida}</p> : null}
       </section>

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { guardarCategoriaAction, subirImagenCategoria } from "@/app/admin/(protected)/categorias/actions";
+import { guardarCategoriaAction } from "@/app/admin/(protected)/categorias/actions";
+import { subirImagenDirecto } from "@/lib/cloudinary-client";
 import { ORDEN_TALLES } from "@/lib/categorias/helpers";
 import type { Talle } from "@/types";
 
@@ -39,9 +40,7 @@ function CampoImagen({
     if (!file) return;
     setSubiendo(true);
     setError(null);
-    const fd = new FormData();
-    fd.set("file", file);
-    const res = await subirImagenCategoria(fd);
+    const res = await subirImagenDirecto(file, "gdv_categorias_unsigned");
     setSubiendo(false);
     e.target.value = "";
     if (res.error) {

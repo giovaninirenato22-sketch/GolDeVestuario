@@ -9,7 +9,12 @@ const tones: Record<Tone, string> = {
   // 3.64:1 (no cumple AA 4.5:1 en texto normal); fg sobre error da 4.73:1.
   error: "border-error bg-error text-fg",
   warning: "text-warning border-warning",
-  muted: "text-fg-muted border-border-strong",
+  // Igual que error: estos badges flotan sobre fotos de producto, que
+  // pueden tener cualquier fondo (blanco, de color, transparente). Con
+  // fondo transparente, texto gris sobre una foto de fondo blanco quedaba
+  // casi ilegible — el fondo sólido oscuro lo hace legible siempre, sea
+  // cual sea la foto de atrás.
+  muted: "text-fg-secondary bg-bg/90 border-border-strong",
 };
 
 export function Badge({ tone = "accent", children }: { tone?: Tone; children: ReactNode }) {

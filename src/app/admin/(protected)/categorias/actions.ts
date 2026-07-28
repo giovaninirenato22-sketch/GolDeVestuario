@@ -8,7 +8,6 @@ import {
   eliminarCategoria,
   reordenarCategorias,
 } from "@/lib/categorias/admin";
-import { guardarArchivoSubido } from "@/lib/uploads";
 import { ORDEN_TALLES } from "@/lib/categorias/helpers";
 import { CUIDADOS_DEFAULT_URL } from "@/data/media";
 import type { Talle } from "@/types";
@@ -77,12 +76,4 @@ export async function reordenarCategoriasAction(ordenados: Array<{ id: string; o
   await reordenarCategorias(ordenados);
   revalidarPaginasPublicas();
   revalidatePath("/admin/categorias");
-}
-
-export async function subirImagenCategoria(formData: FormData): Promise<{ path?: string; error?: string }> {
-  const file = formData.get("file");
-  if (!(file instanceof File)) {
-    return { error: "No se seleccionó ningún archivo" };
-  }
-  return guardarArchivoSubido(file, "guias/uploads");
 }

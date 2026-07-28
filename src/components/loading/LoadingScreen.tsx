@@ -27,7 +27,6 @@ const EXIT_ITEM_DURATION = 0.3;
 // principal aparece directo, sin un instante intermedio de fondo negro solo
 // con el logo.
 const EXIT_DURATION = REVERSE_DURATION + EXIT_ITEM_DURATION;
-const REDUCED_MOTION_HOLD = 0.5;
 
 type Fase = "entrando" | "reversa";
 
@@ -110,27 +109,22 @@ export function LoadingScreen() {
   useEffect(() => {
     document.body.style.overflow = "hidden";
 
-    const prefiereMenosMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const timeouts: ReturnType<typeof setTimeout>[] = [];
 
-    if (prefiereMenosMovimiento) {
-      timeouts.push(setTimeout(() => setFondoSaliendo(true), REDUCED_MOTION_HOLD * 1000));
-    } else {
-      // El viewport no existe durante el render en servidor: la grilla de
-      // salpicado solo puede armarse acá, después del montaje en cliente.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSplats(construirSplats(window.innerWidth, window.innerHeight));
+    // El viewport no existe durante el render en servidor: la grilla de
+    // salpicado solo puede armarse acá, después del montaje en cliente.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSplats(construirSplats(window.innerWidth, window.innerHeight));
 
-      timeouts.push(
-        setTimeout(
-          () => {
-            setFase("reversa");
-            setFondoSaliendo(true);
-          },
-          (FILL_DURATION + ENTER_ITEM_DURATION + HOLD_COVERED) * 1000,
-        ),
-      );
-    }
+    timeouts.push(
+      setTimeout(
+        () => {
+          setFase("reversa");
+          setFondoSaliendo(true);
+        },
+        (FILL_DURATION + ENTER_ITEM_DURATION + HOLD_COVERED) * 1000,
+      ),
+    );
 
     return () => timeouts.forEach(clearTimeout);
   }, []);

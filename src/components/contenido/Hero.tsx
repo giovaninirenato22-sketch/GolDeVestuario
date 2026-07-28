@@ -7,14 +7,11 @@ export function Hero() {
     // -mt-[73px] cancela el pt-[73px] de <main> (ver SiteLayout) para que el
     // video arranque en el borde superior real de la pantalla, detrás del
     // header transparente, en vez de empezar recién debajo de la barra.
-    <div className="relative -mt-[73px] flex min-h-[calc(75svh_+_73px)] items-center overflow-hidden bg-bg sm:min-h-[713px] md:min-h-[793px]">
+    <div className="relative -mt-[73px] flex min-h-[calc(60svh_+_73px)] items-center overflow-hidden bg-bg sm:min-h-[713px] md:min-h-[793px]">
       <HeroVideo />
       <div className="absolute inset-0 bg-bg/75" />
 
-      {/* padding-bottom bien mayor al top: el bloque se centra por flex, pero
-      con más peso abajo el contenido visible queda desplazado hacia arriba,
-      más cerca del centro real de la pantalla en vez de abajo del todo. */}
-      <div className="relative mx-auto w-full max-w-6xl px-6 pt-10 pb-24 text-center sm:pt-14 sm:pb-32 md:pt-20 md:pb-40">
+      <div className="relative mx-auto w-full max-w-6xl px-6 py-10 text-center sm:py-14 md:py-20">
         <RevealOnMount>
           <p className="text-eyebrow text-accent">Pasión por el fútbol</p>
         </RevealOnMount>

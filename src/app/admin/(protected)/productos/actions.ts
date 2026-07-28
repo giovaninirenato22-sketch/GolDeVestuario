@@ -8,9 +8,11 @@ import {
   eliminarProducto,
   toggleDestacado,
   reordenarProductos,
+  agregarImagenProducto,
+  quitarImagenProducto,
+  reordenarImagenesProducto,
 } from "@/lib/productos/admin";
 import { getCategoriaPorSlug } from "@/data/categorias";
-import { guardarArchivoSubido } from "@/lib/uploads";
 import { PLACEHOLDER_PRODUCTO_URL } from "@/data/media";
 import type { CategoriaId, TalleDisponibilidad, TipoProducto } from "@/types";
 
@@ -123,10 +125,32 @@ export async function reordenarProductosAction(ordenados: Array<{ id: string; or
   revalidatePath("/admin/productos");
 }
 
-export async function subirImagen(formData: FormData): Promise<{ path?: string; error?: string }> {
-  const file = formData.get("file");
-  if (!(file instanceof File)) {
-    return { error: "No se seleccionó ningún archivo" };
-  }
-  return guardarArchivoSubido(file, "productos/uploads");
+/**
+ * Se llaman apenas termina de subirse cada foto a Cloudinary (ver
+ * ProductoForm), no recién al guardar el formulario completo — así dos
+ * dispositivos editando el mismo producto no se pisan las fotos entre sí.
+ * Devuelven el array actualizado para que el cliente sincronice su vista.
+ */
+export async function agregarImagenProductoAction(id: string, path: string): Promise<string[]> {
+  const actualizado = await agregarImagenProducto(id, path);
+  revalidarPaginasPublicas(actualizado.slug, actualizado.slug);
+  revalidatePath("/admin/productos");
+  revalidatePath(`/admin/productos/${id}`);
+  return JSON.parse(actualizado.imagenes) as string[];
+}
+
+export async function quitarImagenProductoAction(id: string, path: string): Promise<string[]> {
+  const actualizado = await quitarImagenProducto(id, path);
+  revalidarPaginasPublicas(actualizado.slug, actualizado.slug);
+  revalidatePath("/admin/productos");
+  revalidatePath(`/admin/productos/${id}`);
+  return JSON.parse(actualizado.imagenes) as string[];
+}
+
+export async function reordenarImagenesProductoAction(id: string, orden: string[]): Promise<string[]> {
+  const actualizado = await reordenarImagenesProducto(id, orden);
+  revalidarPaginasPublicas(actualizado.slug, actualizado.slug);
+  revalidatePath("/admin/productos");
+  revalidatePath(`/admin/productos/${id}`);
+  return JSON.parse(actualizado.imagenes) as string[];
 }
