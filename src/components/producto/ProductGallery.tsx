@@ -77,6 +77,15 @@ export function ProductGallery({ imagenes, nombre }: { imagenes: string[]; nombr
                   className="object-contain"
                   draggable={false}
                   priority={index === 0}
+                  // Todas las fotos que no son la primera quedan siempre
+                  // fuera del viewport (las tapa el overflow-hidden del
+                  // carrusel, se muestran corriendo el transform, no
+                  // scrolleando), así que el lazy loading nativo del
+                  // navegador (basado en IntersectionObserver) nunca las
+                  // detecta como "cerca de la pantalla" y no las carga
+                  // nunca. Como un producto tiene pocas fotos, cargarlas
+                  // todas de una no tiene costo real.
+                  loading={index === 0 ? undefined : "eager"}
                 />
               </div>
             ))}
