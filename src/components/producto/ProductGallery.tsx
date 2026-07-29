@@ -3,18 +3,24 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 
-// A partir de cuánto se movió el dedo/mouse (como fracción del ancho del
-// carrusel) se considera "arrastre suficiente" para pasar de foto. Menos que
-// eso y vuelve a la foto actual.
-const UMBRAL_ARRASTRE = 0.15;
+// A partir de cuántos px se movió el dedo se considera un swipe (no un
+// toque accidental). Menos que eso no hace nada.
+const UMBRAL_SWIPE_PX = 40;
 
+/**
+ * Antes esto montaba las N fotos en una tira ancha y las mostraba corriendo
+ * un transform (para el efecto "el dedo arrastra la foto"). Eso rompía en
+ * dispositivos reales de formas que no pude reproducir acá (fotos que no
+ * cargaban, parpadeos) — pointer capture + una tira siempre más ancha que
+ * la pantalla es una combinación frágil entre navegadores. Esta versión es
+ * la más simple posible: una sola imagen montada a la vez (se cambia el
+ * src al tocar flecha/miniatura o al hacer swipe), sin transform ni
+ * pointer capture. Se pierde el efecto de "seguir el dedo" en tiempo real,
+ * pero es mucho más difícil que se rompa.
+ */
 export function ProductGallery({ imagenes, nombre }: { imagenes: string[]; nombre: string }) {
   const [activa, setActiva] = useState(0);
-  const [dragOffset, setDragOffset] = useState(0);
-  const [arrastrando, setArrastrando] = useState(false);
-  const startXRef = useRef(0);
-  const anchoRef = useRef(1);
-  const contenedorRef = useRef<HTMLDivElement>(null);
+  const touchStartXRef = useRef<number | null>(null);
 
   const haySeveras = imagenes.length > 1;
 
@@ -22,74 +28,36 @@ export function ProductGallery({ imagenes, nombre }: { imagenes: string[]; nombr
     setActiva((index + imagenes.length) % imagenes.length);
   }
 
-  function handlePointerDown(e: React.PointerEvent<HTMLDivElement>) {
-    if (!haySeveras) return;
-    startXRef.current = e.clientX;
-    anchoRef.current = contenedorRef.current?.getBoundingClientRect().width || 1;
-    setArrastrando(true);
-    e.currentTarget.setPointerCapture(e.pointerId);
+  function handleTouchStart(e: React.TouchEvent<HTMLDivElement>) {
+    touchStartXRef.current = e.touches[0].clientX;
   }
 
-  function handlePointerMove(e: React.PointerEvent<HTMLDivElement>) {
-    if (!arrastrando) return;
-    setDragOffset(e.clientX - startXRef.current);
-  }
-
-  function finalizarArrastre() {
-    if (!arrastrando) return;
-    const umbralPx = anchoRef.current * UMBRAL_ARRASTRE;
-    if (dragOffset <= -umbralPx) irA(activa + 1);
-    else if (dragOffset >= umbralPx) irA(activa - 1);
-    setDragOffset(0);
-    setArrastrando(false);
+  function handleTouchEnd(e: React.TouchEvent<HTMLDivElement>) {
+    if (touchStartXRef.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartXRef.current;
+    touchStartXRef.current = null;
+    if (deltaX <= -UMBRAL_SWIPE_PX) irA(activa + 1);
+    else if (deltaX >= UMBRAL_SWIPE_PX) irA(activa - 1);
   }
 
   return (
     <div>
       <div className="relative">
         <div
-          ref={contenedorRef}
-          className="relative aspect-square w-full touch-pan-y select-none overflow-hidden rounded-lg bg-surface"
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={finalizarArrastre}
-          onPointerCancel={finalizarArrastre}
+          className="relative aspect-square w-full touch-pan-y overflow-hidden rounded-lg bg-surface"
+          onTouchStart={haySeveras ? handleTouchStart : undefined}
+          onTouchEnd={haySeveras ? handleTouchEnd : undefined}
         >
-          <div
-            className="flex h-full"
-            style={{
-              width: `${imagenes.length * 100}%`,
-              transform: `translateX(calc(${-activa * 100}% + ${dragOffset}px))`,
-              transition: arrastrando ? "none" : "transform 0.3s ease",
-            }}
-          >
-            {imagenes.map((img, index) => (
-              <div
-                key={img + index}
-                className="relative h-full shrink-0"
-                style={{ width: `${100 / imagenes.length}%` }}
-              >
-                <Image
-                  src={img}
-                  alt={index === 0 ? nombre : ""}
-                  fill
-                  sizes="(min-width: 1024px) 500px, 100vw"
-                  className="object-contain"
-                  draggable={false}
-                  priority={index === 0}
-                  // Todas las fotos que no son la primera quedan siempre
-                  // fuera del viewport (las tapa el overflow-hidden del
-                  // carrusel, se muestran corriendo el transform, no
-                  // scrolleando), así que el lazy loading nativo del
-                  // navegador (basado en IntersectionObserver) nunca las
-                  // detecta como "cerca de la pantalla" y no las carga
-                  // nunca. Como un producto tiene pocas fotos, cargarlas
-                  // todas de una no tiene costo real.
-                  loading={index === 0 ? undefined : "eager"}
-                />
-              </div>
-            ))}
-          </div>
+          <Image
+            key={imagenes[activa]}
+            src={imagenes[activa]}
+            alt={nombre}
+            fill
+            sizes="(min-width: 1024px) 500px, 100vw"
+            className="object-contain"
+            draggable={false}
+            priority
+          />
         </div>
 
         {haySeveras ? (
