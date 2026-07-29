@@ -6,6 +6,7 @@ import { Divider } from "@/components/ui/Divider";
 import { CategoryBadge } from "@/components/producto/CategoryBadge";
 import { Breadcrumbs } from "@/components/producto/Breadcrumbs";
 import { ProductGallery } from "@/components/producto/ProductGallery";
+import { SizeRequestNotice } from "@/components/producto/SizeRequestNotice";
 import { ProductPurchasePanel } from "@/components/producto/ProductPurchasePanel";
 import { CareGuide } from "@/components/producto/CareGuide";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -85,7 +86,10 @@ export default async function ProductoDetailPage({
           />
 
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
-            <ProductGallery imagenes={producto.imagenes} nombre={producto.nombre} />
+            <div>
+              <ProductGallery imagenes={producto.imagenes} nombre={producto.nombre} />
+              {producto.tipo === "en-stock" ? <SizeRequestNotice producto={producto} /> : null}
+            </div>
 
             <div>
               <CategoryBadge nombre={categoria.nombre} />

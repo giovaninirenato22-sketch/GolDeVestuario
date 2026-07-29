@@ -15,6 +15,11 @@ export function CartItemRow({ item, producto }: { item: ItemCarrito; producto: P
   const { actualizarCantidad, quitarItem, categorias } = useCart();
   const { showToast } = useToast();
   const nombreCategoria = categorias.find((c) => c.id === producto.categoria)?.nombre ?? producto.categoria;
+  // Un producto En Stock puede tener un ítem puntual pedido por encargue
+  // (talle sin stock, ver SizeRequestNotice) — ese ítem se trata como
+  // encargue para mostrar precio y talle, aunque el producto en general
+  // tenga precio fijo.
+  const esEncargue = producto.tipo === "por-encargue" || item.porEncargue === true;
 
   function handleQuitar() {
     quitarItem(producto.id, item.talle);
@@ -43,7 +48,10 @@ export function CartItemRow({ item, producto }: { item: ItemCarrito; producto: P
             <Link href={`/productos/${producto.slug}`} className="text-body block text-fg hover:underline mt-1">
               {producto.nombre}
             </Link>
-            <p className="text-caption text-fg-muted">Talle {item.talle}</p>
+            <p className="text-caption text-fg-muted">
+              Talle {item.talle}
+              {item.porEncargue ? " · Por encargue" : ""}
+            </p>
           </div>
           <button
             onClick={handleQuitar}
@@ -75,8 +83,10 @@ export function CartItemRow({ item, producto }: { item: ItemCarrito; producto: P
             value={item.cantidad}
             onChange={(cantidad) => actualizarCantidad(producto.id, item.talle, cantidad)}
           />
-          {producto.tipo === "en-stock" ? (
+          {!esEncargue ? (
             <p className="text-body-small text-fg">{formatARS(producto.precio * item.cantidad)}</p>
+          ) : producto.tipo === "en-stock" ? (
+            <p className="text-button text-accent">Precio a coordinar</p>
           ) : (
             <PriceDisplay producto={producto} />
           )}

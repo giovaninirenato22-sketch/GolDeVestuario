@@ -77,4 +77,8 @@ export interface ItemCarrito {
   productoId: string;
   talle: Talle;
   cantidad: number;
+  // true cuando se agregó desde el aviso de "no encontrás tu talle" de un
+  // producto En Stock (talle con cantidad 0): ese ítem puntual se pide por
+  // encargue aunque el resto del producto tenga stock normal.
+  porEncargue?: boolean;
 }

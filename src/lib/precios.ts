@@ -15,7 +15,11 @@ export function aplicaDescuento(medio: MedioDePago): boolean {
 
 export interface ResumenCarrito {
   itemsEnStock: Array<{ item: ItemCarrito; producto: Producto & { tipo: "en-stock" } }>;
-  itemsPorEncargue: Array<{ item: ItemCarrito; producto: Producto & { tipo: "por-encargue" } }>;
+  // Incluye tanto productos Por Encargue reales como ítems puntuales de un
+  // producto En Stock pedidos por encargue (item.porEncargue) — un talle
+  // sin stock de un producto que en general sí tiene, así que el producto
+  // acá puede ser de cualquier tipo.
+  itemsPorEncargue: Array<{ item: ItemCarrito; producto: Producto }>;
   subtotal: number;
   descuento: number;
   total: number;
@@ -37,10 +41,10 @@ export function calcularResumen(
   for (const item of items) {
     const producto = productos.find((p) => p.id === item.productoId);
     if (!producto) continue;
-    if (producto.tipo === "en-stock") {
+    if (producto.tipo === "en-stock" && !item.porEncargue) {
       itemsEnStock.push({ item, producto: producto as Producto & { tipo: "en-stock" } });
     } else {
-      itemsPorEncargue.push({ item, producto: producto as Producto & { tipo: "por-encargue" } });
+      itemsPorEncargue.push({ item, producto });
     }
   }
 

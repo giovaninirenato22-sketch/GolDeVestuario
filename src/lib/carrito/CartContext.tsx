@@ -20,7 +20,7 @@ interface EstadoCarrito {
 }
 
 type Accion =
-  | { type: "AGREGAR"; productoId: string; talle: Talle; cantidad: number }
+  | { type: "AGREGAR"; productoId: string; talle: Talle; cantidad: number; porEncargue?: boolean }
   | { type: "ACTUALIZAR_CANTIDAD"; productoId: string; talle: Talle; cantidad: number }
   | { type: "QUITAR"; productoId: string; talle: Talle }
   | { type: "SET_MEDIO_PAGO"; medio: MedioDePago }
@@ -33,14 +33,24 @@ function reducer(estado: EstadoCarrito, accion: Accion): EstadoCarrito {
       return { items: accion.items, medioDePago: accion.medioDePago, hidratado: true };
 
     case "AGREGAR": {
+      const porEncargue = accion.porEncargue ?? false;
+      // La clave de fusión incluye porEncargue: un talle normal y ese mismo
+      // talle pedido por encargue (caso raro, pero posible si el stock
+      // cambió mientras tanto) son líneas distintas, no se suman entre sí.
       const existente = estado.items.find(
-        (i) => i.productoId === accion.productoId && i.talle === accion.talle,
+        (i) =>
+          i.productoId === accion.productoId &&
+          i.talle === accion.talle &&
+          (i.porEncargue ?? false) === porEncargue,
       );
       const items = existente
         ? estado.items.map((i) =>
             i === existente ? { ...i, cantidad: i.cantidad + accion.cantidad } : i,
           )
-        : [...estado.items, { productoId: accion.productoId, talle: accion.talle, cantidad: accion.cantidad }];
+        : [
+            ...estado.items,
+            { productoId: accion.productoId, talle: accion.talle, cantidad: accion.cantidad, porEncargue },
+          ];
       return { ...estado, items };
     }
 
@@ -81,7 +91,7 @@ interface CartContextValue {
   productos: Producto[];
   productosCargados: boolean;
   categorias: Categoria[];
-  agregarItem: (productoId: string, talle: Talle, cantidad?: number) => void;
+  agregarItem: (productoId: string, talle: Talle, cantidad?: number, porEncargue?: boolean) => void;
   actualizarCantidad: (productoId: string, talle: Talle, cantidad: number) => void;
   quitarItem: (productoId: string, talle: Talle) => void;
   setMedioDePago: (medio: MedioDePago) => void;
@@ -163,8 +173,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       productos,
       productosCargados,
       categorias,
-      agregarItem: (productoId, talle, cantidad = 1) =>
-        dispatch({ type: "AGREGAR", productoId, talle, cantidad }),
+      agregarItem: (productoId, talle, cantidad = 1, porEncargue = false) =>
+        dispatch({ type: "AGREGAR", productoId, talle, cantidad, porEncargue }),
       actualizarCantidad: (productoId, talle, cantidad) =>
         dispatch({ type: "ACTUALIZAR_CANTIDAD", productoId, talle, cantidad }),
       quitarItem: (productoId, talle) => dispatch({ type: "QUITAR", productoId, talle }),
