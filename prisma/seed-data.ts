@@ -1,7 +1,7 @@
 /**
- * CATÁLOGO DE EJEMPLO usado únicamente para poblar la base de datos la
- * primera vez (`npm run db:seed`). Pendiente P-02 (PLAN_DESARROLLO.md):
- * reemplazar por el catálogo real desde el panel /admin antes de lanzar.
+ * Catálogo de ejemplo usado únicamente para poblar la base de datos la
+ * primera vez (`npm run db:seed`) en un entorno nuevo. El catálogo real se
+ * carga y mantiene desde el panel /admin.
  */
 
 // Estos son los mismos assets que src/data/media.ts en el código de la app

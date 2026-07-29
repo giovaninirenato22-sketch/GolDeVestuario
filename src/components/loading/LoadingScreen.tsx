@@ -8,9 +8,9 @@ import { LOGO_URL, LOADING_JERSEY_URLS } from "@/data/media";
 const TOTAL_JERSEYS = 17;
 const JERSEYS = LOADING_JERSEY_URLS;
 
-// Tamaño de exportación real de /public/loading/jersey-*.png (con margen de
-// nitidez para pantallas retina). El tile nunca se dibuja más grande que
-// esto: agrandarlo por CSS/transform sería lo que pierde calidad.
+// Tamaño de exportación real de las camisetas de LOADING_JERSEY_URLS (con
+// margen de nitidez para pantallas retina). El tile nunca se dibuja más
+// grande que esto: agrandarlo por CSS/transform sería lo que pierde calidad.
 const DISPLAY_SIZE = 260;
 // Paso de la grilla: menor al tamaño real de la imagen para que los tiles
 // vecinos se solapen y no quede fondo oscuro visible entre ellos, sin
@@ -147,8 +147,8 @@ export function LoadingScreen() {
       animate={{ opacity: fondoSaliendo ? 0 : 1 }}
       transition={{ duration: EXIT_DURATION, ease: [0.4, 0, 0.2, 1] }}
       style={{ pointerEvents: fondoSaliendo ? "none" : "auto" }}
-      // Negro puro (no --color-bg, que es #0a0a0a): el fondo de /brand/logo.png
-      // es #000000 real, y con --color-bg se notaba el borde cuadrado del logo.
+      // Negro puro (no --color-bg, que es #0a0a0a): el fondo de LOGO_URL es
+      // #000000 real, y con --color-bg se notaba el borde cuadrado del logo.
       className="fixed inset-0 z-[100] overflow-hidden bg-[#000000]"
     >
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center">

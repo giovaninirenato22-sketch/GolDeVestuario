@@ -1,12 +1,9 @@
 /**
- * Constantes del sitio. Los valores marcados como PENDIENTE dependen de
- * información de negocio que no está documentada (ver PLAN_DESARROLLO.md,
- * sección "Información pendiente / dudas abiertas").
+ * Constantes del sitio.
  */
 
-// P-01 (PLAN_DESARROLLO.md): número real de WhatsApp sin confirmar.
-// Se usa un valor de prueba hasta que el negocio lo provea vía
-// NEXT_PUBLIC_WHATSAPP_NUMBER (formato internacional, sin "+" ni espacios).
+// Formato internacional, sin "+" ni espacios. El fallback solo aplica si
+// falta la env var (ej. entorno local sin .env configurado).
 export const WHATSAPP_NUMBER =
   process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "5491100000000";
 

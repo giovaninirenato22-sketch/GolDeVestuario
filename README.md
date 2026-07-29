@@ -1,18 +1,17 @@
 # Gol de Vestuario
 
 Catálogo de camisetas de fútbol con checkout asistido por WhatsApp y un
-panel de administración propio. Ver [PLAN_DESARROLLO.md](./PLAN_DESARROLLO.md)
-para el plan de producto original (el panel /admin con base de datos se
-construyó antes de lo previsto ahí, a pedido explícito — el resto del plan
-sigue vigente).
+panel de administración propio. No procesa pagos en el sitio: el carrito
+arma un mensaje de WhatsApp con el resumen del pedido y la venta se cierra
+por ese canal.
 
 ## Desarrollo
 
 ```bash
 npm install
 cp .env.example .env      # completar los valores (ver abajo)
-npm run db:push           # crea prisma/dev.db con el schema
-npm run db:seed           # carga el catálogo de ejemplo
+npm run db:push           # aplica el schema a la base configurada en DATABASE_URL
+npm run db:seed           # carga un catálogo de ejemplo (opcional, para probar en local)
 npm run dev
 ```
 
@@ -21,43 +20,40 @@ Abrí [http://localhost:3000](http://localhost:3000) para el sitio y
 
 ### Variables de entorno
 
-- `NEXT_PUBLIC_WHATSAPP_NUMBER` — número de destino de los pedidos.
-- `NEXT_PUBLIC_SITE_URL` — URL base para metadatos y Open Graph.
-- `DATABASE_URL` — conexión SQLite (`file:./dev.db` por defecto).
-- `ADMIN_PASSWORD_HASH` — hash bcrypt de la contraseña del panel. Generar con:
-  ```bash
-  node -e "console.log(require('bcryptjs').hashSync('tu-contraseña', 10))"
-  ```
-  **Importante**: el hash contiene `$` (ej. `$2b$10$...`). Next.js expande
-  `$VAR` en los `.env`, así que hay que escaparlos como `\$` en el archivo
-  o el login falla en silencio. Ejemplo:
-  `ADMIN_PASSWORD_HASH="\$2b\$10\$..."`.
-- `SESSION_SECRET` — clave para firmar la cookie de sesión del admin:
-  ```bash
-  node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-  ```
+Ver `.env.example` para el detalle y las instrucciones de cada una:
+`NEXT_PUBLIC_WHATSAPP_NUMBER`, `NEXT_PUBLIC_SITE_URL`, `DATABASE_URL` y
+`DIRECT_URL` (Postgres — Neon u otro proveedor), `ADMIN_PASSWORD_HASH`,
+`SESSION_SECRET`, y las credenciales de Cloudinary
+(`CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`,
+`NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`).
 
-Contraseña de desarrollo por defecto (solo en este repo, cambiarla antes de
-cualquier uso real): `GolDeVestuario2026!`.
+**Importante con `ADMIN_PASSWORD_HASH`**: el hash contiene `$` (ej.
+`$2b$10$...`). Next.js expande `$VAR` en los `.env`, así que hay que
+escaparlos como `\$` en el archivo o el login falla en silencio. Ejemplo:
+`ADMIN_PASSWORD_HASH="\$2b\$10\$..."`.
 
 ## Estructura
 
-- `prisma/schema.prisma` — modelo `Producto` (SQLite).
-- `prisma/seed.ts` + `prisma/seed-data.ts` — catálogo de ejemplo para
-  poblar la base la primera vez (`npm run db:seed`). **Son datos de
-  ejemplo** (ver P-02 en el plan); cargar el catálogo real desde `/admin`.
+- `prisma/schema.prisma` — modelos `Producto` y `Categoria` (Postgres).
+- `prisma/seed.ts` + `prisma/seed-data.ts` — catálogo de ejemplo para un
+  entorno nuevo (`npm run db:seed`); el catálogo real se carga y mantiene
+  desde `/admin`.
 - `src/data/productos.ts` — lecturas públicas del catálogo (server-only,
   usa Prisma). El carrito, que corre en el navegador, no lo importa
   directamente: consume `GET /api/productos`.
 - `src/lib/productos/admin.ts` — altas/bajas/cambios del catálogo, usados
   por las Server Actions de `/admin`.
-- `src/data/categorias.ts` — mapa categoría (Fan/Player/Retro) → guía de
-  talles y foto de cuidados. RN-06.
+- `src/data/categorias.ts` — categorías (Fan/Player/Retro/Shorts) → guía de
+  talles y foto de cuidados, cargadas y editables desde `/admin`.
 - `src/data/site.ts` — constantes del sitio (nav, WhatsApp, descuento).
+- `src/data/media.ts` — URLs de Cloudinary de los assets estáticos (logo,
+  banners, videos del hero, etc.).
 - `src/lib/precios.ts` — cálculo de subtotal/descuento/total del carrito.
 - `src/lib/whatsapp.ts` — armado del mensaje y del enlace de WhatsApp.
 - `src/lib/carrito/CartContext.tsx` — estado del carrito (persistido en
   `localStorage`, catálogo traído por `fetch`).
+- `src/lib/cloudinary-client.ts` — subida de imágenes directo del
+  navegador a Cloudinary desde los formularios de `/admin`.
 - `src/lib/auth/session.ts` + `src/proxy.ts` — sesión del admin (cookie
   firmada) y protección de `/admin` (`proxy.ts` es el reemplazo de
   `middleware.ts` en Next.js 16).
@@ -71,24 +67,29 @@ cualquier uso real): `GolDeVestuario2026!`.
 ## Administrar el catálogo
 
 Entrar a `/admin`, iniciar sesión, y desde ahí crear/editar/eliminar
-productos (nombre, categoría, tipo, precio, talles disponibles, imágenes,
-destacado, activo). Los cambios se reflejan en el sitio público al
-instante (revalidación on-demand), sin necesidad de redeploy.
+productos y categorías (nombre, categoría, tipo, precio, talles y
+cantidad por talle, imágenes, destacado, activo). Los cambios se reflejan
+en el sitio público al instante (revalidación on-demand), sin necesidad de
+redeploy.
 
 Reglas que el formulario aplica automáticamente:
 
-- `tipo: en-stock` pide precio; `tipo: por-encargue` no permite cargarlo
-  (RN-04/RN-05).
-- Los talles ofrecidos dependen de la categoría elegida (RN-06).
-- Máximo 8 productos "destacados" se muestran en Inicio (RN-02) — se puede
-  marcar cualquier cantidad, pero el sitio recorta a 8.
-- Las imágenes se suben a Cloudinary (ver `src/lib/uploads.ts`).
+- `tipo: en-stock` pide precio y cantidad por talle; `tipo: por-encargue`
+  no permite cargar precio (solo qué talles se ofrecen).
+- Los talles ofrecidos dependen de la categoría elegida.
+- Máximo 8 productos "destacados" se muestran en Inicio — se puede marcar
+  cualquier cantidad, pero el sitio recorta a 8.
+- Las imágenes se suben directo del navegador a Cloudinary (sin pasar por
+  el servidor).
 
 ## Pendientes de negocio
 
-Ver la sección "Información pendiente" de `PLAN_DESARROLLO.md`. Los más
-urgentes: número real de WhatsApp, catálogo real y fotos de producto (ya
-se pueden cargar desde `/admin`).
+- Historia de la marca, fecha de fundación y equipo: no están definidos
+  todavía (aviso visible en `/quienes-somos`).
+- Cantidades reales de stock por talle: la migración a este modelo cargó
+  un valor provisorio (5 unidades) en los talles que ya estaban marcados
+  como disponibles — conviene revisar y cargar la cantidad real de cada
+  producto desde `/admin`.
 
 ## Deploy
 
@@ -99,7 +100,5 @@ depende del disco local del servidor.
 Variables de entorno necesarias en producción (ver `.env.example`):
 `DATABASE_URL`, `DIRECT_URL`, `ADMIN_PASSWORD_HASH`, `SESSION_SECRET`,
 `NEXT_PUBLIC_WHATSAPP_NUMBER`, `NEXT_PUBLIC_SITE_URL`,
-`CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`.
-
-Guía paso a paso (cuentas, costos, verificación final) en
-`docs/launch-checklist.md`.
+`CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`,
+`NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`.

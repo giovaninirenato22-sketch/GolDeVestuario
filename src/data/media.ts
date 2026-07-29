@@ -1,9 +1,8 @@
 /**
  * URLs de Cloudinary para los assets estáticos del sitio (logo, banners,
  * videos del hero, camisetas de la pantalla de carga, placeholder de
- * producto). Se subieron una sola vez con scripts/migrar-assets-cloudinary.ts
- * — si hay que reemplazar alguno, subí el archivo nuevo a Cloudinary con el
- * mismo public_id (overwrite) o actualizá la URL acá.
+ * producto). Si hay que reemplazar alguno, subí el archivo nuevo a
+ * Cloudinary con el mismo public_id (overwrite) o actualizá la URL acá.
  */
 
 export const LOGO_URL = "https://res.cloudinary.com/g22yoyre/image/upload/v1785278084/brand/logo.png";
@@ -48,14 +47,3 @@ export const LOADING_JERSEY_URLS: string[] = [
   "https://res.cloudinary.com/g22yoyre/image/upload/v1785278118/loading/jersey-16.png",
   "https://res.cloudinary.com/g22yoyre/image/upload/v1785278118/loading/jersey-17.png",
 ];
-
-export const GUIA_TALLES_FAN_URL =
-  "https://res.cloudinary.com/g22yoyre/image/upload/v1785278088/guias/talles-fan.png";
-export const GUIA_TALLES_PLAYER_URL =
-  "https://res.cloudinary.com/g22yoyre/image/upload/v1785278088/guias/talles-player.jpg";
-export const GUIA_TALLES_RETRO_URL =
-  "https://res.cloudinary.com/g22yoyre/image/upload/v1785278089/guias/talles-retro.jpg";
-export const GUIA_TALLES_SHORTS_FAN_URL =
-  "https://res.cloudinary.com/g22yoyre/image/upload/v1785278090/guias/talles-shorts-fan.png";
-export const GUIA_TALLES_SHORTS_PLAYER_URL =
-  "https://res.cloudinary.com/g22yoyre/image/upload/v1785278090/guias/talles-shorts-player.jpg";
