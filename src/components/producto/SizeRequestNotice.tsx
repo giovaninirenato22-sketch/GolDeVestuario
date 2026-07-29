@@ -14,19 +14,22 @@ import { useToast } from "@/components/ui/Toast";
  */
 export function SizeRequestNotice({ producto }: { producto: ProductoEnStock }) {
   const [abierto, setAbierto] = useState(false);
+  const [talleElegido, setTalleElegido] = useState<Talle | null>(null);
   const { agregarItem } = useCart();
   const { showToast } = useToast();
 
   const tallesSinStock = producto.talles.filter((t) => t.cantidad === 0);
   if (tallesSinStock.length === 0) return null;
 
-  function handleSeleccionar(talle: Talle) {
-    agregarItem(producto.id, talle, 1, true);
-    showToast(`Agregado por encargue: ${producto.nombre} (Talle ${talle})`, {
+  function handleAgregar() {
+    if (!talleElegido) return;
+    agregarItem(producto.id, talleElegido, 1, true);
+    showToast(`Agregado por encargue: ${producto.nombre} (Talle ${talleElegido})`, {
       tone: "success",
       href: "/carrito",
       hrefLabel: "Ver carrito",
     });
+    setTalleElegido(null);
     setAbierto(false);
   }
 
@@ -38,21 +41,39 @@ export function SizeRequestNotice({ producto }: { producto: ProductoEnStock }) {
         aria-expanded={abierto}
         className="text-body-small text-left text-fg-secondary underline decoration-dotted underline-offset-2 hover:text-fg"
       >
-        ¿No encontrás el talle que estás buscando? Seleccionalo acá
+        ¿No encontrás el talle que estás buscando? Seleccionalo acá y pedilo por encargue
       </button>
       {abierto ? (
-        <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label="Talles por encargue">
-          {tallesSinStock.map(({ talle }) => (
-            <button
-              key={talle}
-              type="button"
-              onClick={() => handleSeleccionar(talle)}
-              className="text-button rounded-md border border-border-strong px-4 py-2 text-fg transition-all duration-150 hover:border-accent active:scale-95"
-            >
-              {talle}
-            </button>
-          ))}
-        </div>
+        <>
+          <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label="Talles por encargue">
+            {tallesSinStock.map(({ talle }) => {
+              const selected = talleElegido === talle;
+              return (
+                <button
+                  key={talle}
+                  type="button"
+                  aria-pressed={selected}
+                  onClick={() => setTalleElegido(talle)}
+                  className={`text-button rounded-md border px-4 py-2 transition-all duration-150 active:scale-95 ${
+                    selected
+                      ? "border-accent bg-accent text-on-accent"
+                      : "border-border-strong text-fg hover:border-accent"
+                  }`}
+                >
+                  {talle}
+                </button>
+              );
+            })}
+          </div>
+          <button
+            type="button"
+            onClick={handleAgregar}
+            disabled={!talleElegido}
+            className="text-button mt-3 rounded-md bg-accent px-5 py-2 text-on-accent transition-opacity duration-150 hover:bg-accent-light disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {talleElegido ? `Agregar talle ${talleElegido} por encargue` : "Elegí un talle"}
+          </button>
+        </>
       ) : null}
     </div>
   );

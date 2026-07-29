@@ -6,6 +6,7 @@ import { PriceDisplay } from "./PriceDisplay";
 import { SizeSelector } from "./SizeSelector";
 import { QuantityStepper } from "./QuantityStepper";
 import { SizeGuideModal } from "./SizeGuideModal";
+import { SizeRequestNotice } from "./SizeRequestNotice";
 import { Button } from "@/components/ui/Button";
 import { useCart } from "@/lib/carrito/CartContext";
 import { useToast } from "@/components/ui/Toast";
@@ -66,6 +67,7 @@ export function ProductPurchasePanel({ producto, categoria }: { producto: Produc
         <div className="mt-3">
           <SizeGuideModal categoria={categoria} />
         </div>
+        {producto.tipo === "en-stock" ? <SizeRequestNotice producto={producto} /> : null}
       </div>
 
       <div>
