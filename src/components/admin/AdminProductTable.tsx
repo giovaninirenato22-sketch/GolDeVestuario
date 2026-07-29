@@ -19,7 +19,7 @@ import {
   toggleDestacadoAction,
   reordenarProductosAction,
 } from "@/app/admin/(protected)/productos/actions";
-import type { Categoria, CategoriaId } from "@/types";
+import type { Categoria, CategoriaId, TipoProducto } from "@/types";
 
 export interface ProductoAdminRow {
   id: string;
@@ -141,7 +141,8 @@ export function AdminProductTable({
   categorias: Categoria[];
 }) {
   const [productos, setProductos] = useState(productosIniciales);
-  const [filtro, setFiltro] = useState<CategoriaId | "todas">("todas");
+  const [filtroCategoria, setFiltroCategoria] = useState<CategoriaId | "todas">("todas");
+  const [filtroTipo, setFiltroTipo] = useState<TipoProducto | "todos">("todos");
   const { showToast } = useToast();
 
   const nombresPorCategoria = useMemo(
@@ -149,9 +150,15 @@ export function AdminProductTable({
     [categorias],
   );
 
+  // Los dos filtros se combinan (AND): categoría Y tipo a la vez, no uno u otro.
   const visibles = useMemo(
-    () => productos.filter((p) => filtro === "todas" || p.categoria === filtro),
-    [productos, filtro],
+    () =>
+      productos.filter(
+        (p) =>
+          (filtroCategoria === "todas" || p.categoria === filtroCategoria) &&
+          (filtroTipo === "todos" || p.tipo === filtroTipo),
+      ),
+    [productos, filtroCategoria, filtroTipo],
   );
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
@@ -201,13 +208,13 @@ export function AdminProductTable({
 
   return (
     <div>
-      <div role="group" aria-label="Filtrar por categoría" className="mb-6 flex flex-wrap gap-2">
+      <div role="group" aria-label="Filtrar por categoría" className="mb-3 flex flex-wrap gap-2">
         <button
           type="button"
-          onClick={() => setFiltro("todas")}
-          aria-pressed={filtro === "todas"}
+          onClick={() => setFiltroCategoria("todas")}
+          aria-pressed={filtroCategoria === "todas"}
           className={`text-button rounded-full border px-4 py-2 transition-all duration-150 active:scale-95 ${
-            filtro === "todas"
+            filtroCategoria === "todas"
               ? "border-accent bg-accent text-on-accent"
               : "border-border-strong text-fg-secondary hover:border-accent"
           }`}
@@ -218,10 +225,10 @@ export function AdminProductTable({
           <button
             key={cat.id}
             type="button"
-            onClick={() => setFiltro(cat.id)}
-            aria-pressed={filtro === cat.id}
+            onClick={() => setFiltroCategoria(cat.id)}
+            aria-pressed={filtroCategoria === cat.id}
             className={`text-button rounded-full border px-4 py-2 transition-all duration-150 active:scale-95 ${
-              filtro === cat.id
+              filtroCategoria === cat.id
                 ? "border-accent bg-accent text-on-accent"
                 : "border-border-strong text-fg-secondary hover:border-accent"
             }`}
@@ -231,8 +238,32 @@ export function AdminProductTable({
         ))}
       </div>
 
+      <div role="group" aria-label="Filtrar por tipo" className="mb-6 flex flex-wrap gap-2">
+        {(
+          [
+            { value: "todos", label: "Todos los tipos" },
+            { value: "en-stock", label: "En Stock" },
+            { value: "por-encargue", label: "Por Encargue" },
+          ] as const
+        ).map((opcion) => (
+          <button
+            key={opcion.value}
+            type="button"
+            onClick={() => setFiltroTipo(opcion.value)}
+            aria-pressed={filtroTipo === opcion.value}
+            className={`text-button rounded-full border px-4 py-2 transition-all duration-150 active:scale-95 ${
+              filtroTipo === opcion.value
+                ? "border-accent bg-accent text-on-accent"
+                : "border-border-strong text-fg-secondary hover:border-accent"
+            }`}
+          >
+            {opcion.label}
+          </button>
+        ))}
+      </div>
+
       {visibles.length === 0 ? (
-        <p className="text-body text-fg-secondary">No hay productos en esta categoría.</p>
+        <p className="text-body text-fg-secondary">No hay productos con estos filtros.</p>
       ) : (
         <div className="overflow-x-auto rounded-lg border border-border">
           <DndContext
