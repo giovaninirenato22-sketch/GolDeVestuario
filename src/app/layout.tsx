@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Anton, Oswald, Bebas_Neue } from "next/font/google";
 import "./globals.css";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/data/site";
-import { LoadingScreen } from "@/components/loading/LoadingScreen";
 
 const anton = Anton({
   subsets: ["latin"],
@@ -42,7 +41,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es" className={`${anton.variable} ${oswald.variable} ${bebasNeue.variable}`}>
       <body className="flex min-h-screen flex-col antialiased">
-        <LoadingScreen />
         {children}
       </body>
     </html>

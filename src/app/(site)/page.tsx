@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LoadingScreen } from "@/components/loading/LoadingScreen";
 import { Hero } from "@/components/contenido/Hero";
 import { StatRow } from "@/components/contenido/StatRow";
 import { CTABanner } from "@/components/contenido/CTABanner";
@@ -21,6 +22,7 @@ export default async function Home() {
 
   return (
     <>
+      <LoadingScreen />
       <Hero />
       <StatRow />
 
