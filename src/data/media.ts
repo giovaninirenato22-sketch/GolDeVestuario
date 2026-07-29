@@ -12,8 +12,13 @@ export const BANNER_MOBILE_URL =
 export const BANNER_DESKTOP_URL =
   "https://res.cloudinary.com/g22yoyre/image/upload/v1785278086/banners/no-encontras-tu-camiseta-desktop.png";
 
+// q_auto: el archivo fuente se subió sin comprimir (41.9MB). Medido contra
+// el archivo real: con q_auto Cloudinary lo entrega en 5.5MB (-87%) sin
+// pérdida visible, manteniendo el contenedor mp4 (importante: HeroVideo.tsx
+// declara <source type="video/mp4"> a mano, así que la transformación no
+// puede cambiar de formato o el navegador rechaza la fuente).
 export const HERO_VIDEO_DESKTOP_URL =
-  "https://res.cloudinary.com/g22yoyre/video/upload/v1785278095/hero/hero-desktop.mp4";
+  "https://res.cloudinary.com/g22yoyre/video/upload/q_auto/v1785278095/hero/hero-desktop.mp4";
 // c_crop recorta las barras negras que el archivo fuente trae incrustadas
 // en los píxeles (el video real es vertical 608x1080, pero está exportado
 // dentro de un lienzo horizontal 1920x1080 con relleno negro a los costados;
