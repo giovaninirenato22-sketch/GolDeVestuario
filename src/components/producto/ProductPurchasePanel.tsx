@@ -18,7 +18,18 @@ export function ProductPurchasePanel({ producto, categoria }: { producto: Produc
   const { showToast } = useToast();
 
   const talleSeleccionado = producto.talles.find((t) => t.talle === talle);
-  const puedeAgregar = talle !== null && talleSeleccionado?.disponible;
+  // "por-encargue" no tiene inventario real (cantidad ahí es solo 1/0 según
+  // se ofrezca el talle o no), así que el tope de cantidad y el texto de
+  // stock restante solo aplican a "en-stock".
+  const stockDelTalle = producto.tipo === "en-stock" ? talleSeleccionado?.cantidad : undefined;
+  const puedeAgregar = talle !== null && (talleSeleccionado?.cantidad ?? 0) > 0;
+
+  // Reinicia la cantidad al cambiar de talle en vez de arrastrar un valor
+  // que podría superar el stock del talle recién elegido.
+  function handleCambiarTalle(nuevoTalle: Talle) {
+    setTalle(nuevoTalle);
+    setCantidad(1);
+  }
 
   function handleAgregar() {
     if (!talle) return;
@@ -44,7 +55,14 @@ export function ProductPurchasePanel({ producto, categoria }: { producto: Produc
 
       <div>
         <p className="text-body-small mb-3 text-fg-secondary">Talle</p>
-        <SizeSelector talles={producto.talles} value={talle} onChange={setTalle} />
+        <SizeSelector talles={producto.talles} value={talle} onChange={handleCambiarTalle} />
+        {talle && stockDelTalle !== undefined ? (
+          <p className="text-caption mt-2 text-fg-muted" aria-live="polite">
+            {stockDelTalle > 0
+              ? `Quedan ${stockDelTalle} unidad${stockDelTalle === 1 ? "" : "es"} en talle ${talle}`
+              : `Sin stock en talle ${talle}`}
+          </p>
+        ) : null}
         <div className="mt-3">
           <SizeGuideModal categoria={categoria} />
         </div>
@@ -52,7 +70,7 @@ export function ProductPurchasePanel({ producto, categoria }: { producto: Produc
 
       <div>
         <p className="text-body-small mb-3 text-fg-secondary">Cantidad</p>
-        <QuantityStepper value={cantidad} onChange={setCantidad} />
+        <QuantityStepper value={cantidad} onChange={setCantidad} max={stockDelTalle} />
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row">

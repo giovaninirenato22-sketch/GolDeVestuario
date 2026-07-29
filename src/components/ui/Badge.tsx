@@ -8,7 +8,11 @@ const tones: Record<Tone, string> = {
   // Fondo sólido en vez de texto sobre transparente: text-error sobre bg da
   // 3.64:1 (no cumple AA 4.5:1 en texto normal); fg sobre error da 4.73:1.
   error: "border-error bg-error text-fg",
-  warning: "text-warning border-warning",
+  // Igual razón que error/muted: fondo sólido para que se lea sobre
+  // cualquier foto de fondo. --color-warning es un dorado claro (mismo
+  // valor que accent-light), así que necesita texto oscuro (bg) en vez de
+  // claro (fg) para el contraste — al revés que error/muted.
+  warning: "border-warning bg-warning text-bg",
   // Igual que error: estos badges flotan sobre fotos de producto, que
   // pueden tener cualquier fondo (blanco, de color, transparente). Con
   // fondo transparente, texto gris sobre una foto de fondo blanco quedaba

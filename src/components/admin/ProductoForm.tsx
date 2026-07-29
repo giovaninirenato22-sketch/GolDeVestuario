@@ -74,7 +74,7 @@ export function ProductoForm({ valores, categorias }: { valores?: ProductoFormVa
   const [subiendo, setSubiendo] = useState(false);
   const [errorSubida, setErrorSubida] = useState<string | null>(null);
 
-  const disponiblesPorTalle = new Map(valores?.talles.map((t) => [t.talle, t.disponible]));
+  const cantidadPorTalle = new Map(valores?.talles.map((t) => [t.talle, t.cantidad]));
   const categoriaActual = categorias.find((c) => c.id === categoria);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
@@ -235,18 +235,42 @@ export function ProductoForm({ valores, categorias }: { valores?: ProductoFormVa
 
       <section>
         <p className={labelClass}>Talles ofrecidos ({categoriaActual?.nombre ?? categoria})</p>
-        <div className="mt-2 flex flex-wrap gap-4">
-          {(categoriaActual?.tallesDisponibles ?? []).map((talle) => (
-            <label key={talle} className="text-body-small flex items-center gap-2 text-fg">
-              <input
-                type="checkbox"
-                name={`talle_${talle}`}
-                defaultChecked={disponiblesPorTalle.get(talle) ?? true}
-              />
-              {talle}
-            </label>
-          ))}
-        </div>
+        {tipo === "en-stock" ? (
+          <>
+            <p className="text-caption mt-1 text-fg-muted">Cantidad de unidades en stock por talle.</p>
+            <div className="mt-2 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
+              {(categoriaActual?.tallesDisponibles ?? []).map((talle) => (
+                <div key={talle}>
+                  <label className={labelClass} htmlFor={`talle_${talle}`}>
+                    {talle}
+                  </label>
+                  <input
+                    id={`talle_${talle}`}
+                    name={`talle_${talle}`}
+                    type="number"
+                    min={0}
+                    step={1}
+                    defaultValue={cantidadPorTalle.get(talle) ?? 0}
+                    className={inputClass}
+                  />
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="mt-2 flex flex-wrap gap-4">
+            {(categoriaActual?.tallesDisponibles ?? []).map((talle) => (
+              <label key={talle} className="text-body-small flex items-center gap-2 text-fg">
+                <input
+                  type="checkbox"
+                  name={`talle_${talle}`}
+                  defaultChecked={(cantidadPorTalle.get(talle) ?? 1) > 0}
+                />
+                {talle}
+              </label>
+            ))}
+          </div>
+        )}
       </section>
 
       <section>

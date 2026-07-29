@@ -2,11 +2,15 @@ export function QuantityStepper({
   value,
   onChange,
   min = 1,
+  max,
 }: {
   value: number;
   onChange: (value: number) => void;
   min?: number;
+  max?: number;
 }) {
+  const llegoAlMax = max !== undefined && value >= max;
+
   return (
     <div className="inline-flex items-center rounded-md border border-border-strong" role="group" aria-label="Cantidad">
       <button
@@ -23,9 +27,10 @@ export function QuantityStepper({
       </span>
       <button
         type="button"
-        onClick={() => onChange(value + 1)}
+        onClick={() => onChange(max !== undefined ? Math.min(max, value + 1) : value + 1)}
+        disabled={llegoAlMax}
         aria-label="Sumar"
-        className="text-button flex h-10 w-10 items-center justify-center text-fg transition-transform duration-150 active:scale-90"
+        className="text-button flex h-10 w-10 items-center justify-center text-fg transition-transform duration-150 active:scale-90 disabled:text-fg-muted disabled:active:scale-100"
       >
         +
       </button>

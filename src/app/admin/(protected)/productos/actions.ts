@@ -53,10 +53,16 @@ export async function guardarProducto(formData: FormData) {
     redirect(`${volverA}?error=${encodeURIComponent("La categoría seleccionada ya no existe")}`);
   }
 
-  const talles: TalleDisponibilidad[] = categoriaInfo.tallesDisponibles.map((talle) => ({
-    talle,
-    disponible: formData.get(`talle_${talle}`) === "on",
-  }));
+  // "por-encargue" no tiene inventario real: el checkbox de ese talle
+  // guarda 1 (se ofrece) o 0 (no se ofrece), igual que el viejo booleano
+  // `disponible`. "en-stock" guarda la cantidad real que cargó el admin.
+  const talles: TalleDisponibilidad[] = categoriaInfo.tallesDisponibles.map((talle) => {
+    if (tipo === "en-stock") {
+      const cantidad = Math.max(0, Math.trunc(Number(formData.get(`talle_${talle}`)) || 0));
+      return { talle, cantidad };
+    }
+    return { talle, cantidad: formData.get(`talle_${talle}`) === "on" ? 1 : 0 };
+  });
 
   let imagenes: string[] = [];
   try {

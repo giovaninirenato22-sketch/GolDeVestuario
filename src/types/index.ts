@@ -8,9 +8,12 @@ export type TipoProducto = "en-stock" | "por-encargue";
 
 export type Talle = "M" | "L" | "XL" | "2XL" | "3XL";
 
+// Para "por-encargue" no hay inventario real: cantidad es 1 (se ofrece ese
+// talle) o 0 (no se ofrece), como el viejo booleano `disponible`. Para
+// "en-stock" es la cantidad real de unidades en ese talle.
 export interface TalleDisponibilidad {
   talle: Talle;
-  disponible: boolean;
+  cantidad: number;
 }
 
 export interface Categoria {

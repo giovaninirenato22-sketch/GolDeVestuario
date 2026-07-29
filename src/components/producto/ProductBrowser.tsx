@@ -57,7 +57,7 @@ export function ProductBrowser({
   const resultado = useMemo(() => {
     const filtrados = productos.filter((p) => {
       const pasaCategoria = categoria === "todas" || p.categoria === categoria;
-      const pasaTalle = talle === "todos" || p.talles.some((t) => t.talle === talle && t.disponible);
+      const pasaTalle = talle === "todos" || p.talles.some((t) => t.talle === talle && t.cantidad > 0);
       const pasaBusqueda =
         busqueda.trim() === "" ||
         coincideBusqueda(p.nombre, busqueda) ||

@@ -8,7 +8,7 @@ import type { Producto } from "@/types";
  */
 export function ProductJsonLd({ producto }: { producto: Producto }) {
   const url = `${SITE_URL}/productos/${producto.slug}`;
-  const hayStock = producto.tipo === "en-stock" && producto.talles.some((t) => t.disponible);
+  const hayStock = producto.tipo === "en-stock" && producto.talles.some((t) => t.cantidad > 0);
 
   const json = {
     "@context": "https://schema.org",

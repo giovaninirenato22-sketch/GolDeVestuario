@@ -11,7 +11,8 @@ export function SizeSelector({
 }) {
   return (
     <div className="flex flex-wrap gap-2" role="group" aria-label="Elegir talle">
-      {talles.map(({ talle, disponible }) => {
+      {talles.map(({ talle, cantidad }) => {
+        const disponible = cantidad > 0;
         const selected = value === talle;
         return (
           <button

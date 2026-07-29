@@ -2,6 +2,17 @@ import Link from "next/link";
 import { logout } from "../login/actions";
 import { ToastProvider } from "@/components/ui/Toast";
 
+// La sesión se valida en proxy.ts (Edge Middleware), no acá adentro — como
+// ninguna página de /admin llama a cookies()/headers() directamente, Next
+// no tiene forma de detectar que esto necesita ser dinámico y lo trata como
+// estático/cacheable. Eso hacía que Vercel sirviera una versión vieja de la
+// página (visible como respuestas 304 en los logs) en vez de consultar la
+// base en cada visita, mostrando el listado de productos desactualizado o
+// vacío después de cambios hechos desde otro dispositivo. force-dynamic
+// para todo el árbol de /admin/(protected) asegura que cada visita golpee
+// la base de datos de nuevo.
+export const dynamic = "force-dynamic";
+
 export default function AdminProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
     <ToastProvider>

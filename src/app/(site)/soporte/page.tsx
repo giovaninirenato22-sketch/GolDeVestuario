@@ -3,7 +3,6 @@ import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Accordion } from "@/components/ui/Accordion";
-import { PendingNotice } from "@/components/ui/PendingNotice";
 import { SizeGuideTabs } from "@/components/producto/SizeGuideTabs";
 import { CareGuide } from "@/components/producto/CareGuide";
 import { ContactCard } from "@/components/contenido/ContactCard";
@@ -72,10 +71,15 @@ export default async function SoportePage() {
 
       <Section>
         <Container className="max-w-2xl">
-          <PendingNotice>
-            Políticas de envío, plazos, cambios y devoluciones: todavía no fueron definidas por
-            el negocio. Consultalas directamente por WhatsApp antes de confirmar tu pedido.
-          </PendingNotice>
+          <SectionHeader eyebrow="Políticas" title="Cambios y devoluciones" />
+          <p className="text-body-small text-fg-secondary">
+            Los cambios o devoluciones se pueden realizar con un plazo de hasta 15 días hábiles.
+          </p>
+          <ul className="text-body-small mt-4 flex flex-col gap-2 text-fg-secondary">
+            <li>Los cambios por cambio de talle quedan a cargo del cliente.</li>
+            <li>Los cambios por errores nuestros quedan a cargo nuestro.</li>
+            <li>Los cambios por fallas de fábrica quedan a cargo nuestro.</li>
+          </ul>
         </Container>
       </Section>
 

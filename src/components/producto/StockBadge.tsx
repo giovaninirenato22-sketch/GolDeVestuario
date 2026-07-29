@@ -6,8 +6,8 @@ export function StockBadge({ producto }: { producto: Producto }) {
     return <Badge tone="muted">Por encargue</Badge>;
   }
 
-  const disponibles = producto.talles.filter((t) => t.disponible).length;
-  if (disponibles === 0) return <Badge tone="error">Sin stock</Badge>;
-  if (disponibles <= 2) return <Badge tone="warning" >Últimas unidades</Badge>;
+  const totalUnidades = producto.talles.reduce((acc, t) => acc + t.cantidad, 0);
+  if (totalUnidades === 0) return <Badge tone="error">Sin stock</Badge>;
+  if (totalUnidades === 1) return <Badge tone="warning">Última unidad</Badge>;
   return null;
 }
